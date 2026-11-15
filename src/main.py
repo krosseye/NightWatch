@@ -5,29 +5,18 @@ This script sets up the UI and handles the countdown timer.
 """
 
 import logging
-import os
 import sys
 import tkinter as tk
-from tkinter import messagebox, ttk
+from tkinter import ttk
 
-import sv_ttk
 from actions import pause_media, shutdown_system, sleep_system
+from resources import sv_ttk
 from timer import CountdownTimer
+from utils import check_root_privileges, resource_path, show_error
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-
-
-def resource_path(relative_path):
-    """Get absolute path to resource (works for dev and bin)"""
-    try:
-        base_path = sys._MEIPASS  # PyInstaller temp folder
-        base_path = os.path.join(sys._MEIPASS, "resources")
-    except Exception:
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        base_path = os.path.join(current_dir, "resources")
-    return os.path.join(base_path, relative_path)
 
 
 class NightWatch(tk.Tk):
@@ -43,7 +32,6 @@ class NightWatch(tk.Tk):
 
         self.lbf_action = ttk.LabelFrame(self, text="Select Action", padding=5)
         action_options = ["Pause", "Sleep", "Shutdown"]
-
         self.cmb_actions = ttk.Combobox(
             self.lbf_action, values=action_options, state="readonly"
         )
@@ -71,22 +59,14 @@ class NightWatch(tk.Tk):
         self.setup_ui()
         self.timer = None
 
-        try:
-            # Attempt to get the EUID
-            euid = os.geteuid()
-            if euid != 0:
-                self.show_error("This program needs root privileges.")
-                sys.exit(1)
-        except AttributeError:
-            # On Windows, os.geteuid() is not defined
-            pass
+        check_root_privileges()
 
     def setup_window(self):
         """Set up the main application window."""
         self.title("NightWatch")
         self.resizable(height=False, width=False)
+        self.iconphoto(True, tk.PhotoImage(file=resource_path("icon.png")))
 
-        # Calculate the x and y coordinates for the center of the screen
         width, height = 252, 275
         screen_width, screen_height = (
             self.winfo_screenwidth(),
@@ -94,8 +74,6 @@ class NightWatch(tk.Tk):
         )
         x, y = (screen_width / 2) - (width / 2), (screen_height / 2) - (height / 2)
         self.geometry(f"{width}x{height}+{int(x)}+{int(y)}")
-
-        self.iconphoto(True, tk.PhotoImage(file=resource_path("icon.png")))
 
         if len(sys.argv) > 1 and sys.argv[1].lower() in [
             "--light-theme",
@@ -107,7 +85,6 @@ class NightWatch(tk.Tk):
 
     def setup_ui(self):
         """Set up the user interface elements."""
-        # setup action section
         self.lbf_action.grid(row=0, columnspan=3, padx=10, pady=5, sticky="ew")
         self.cmb_actions.current(0)
         self.cmb_actions.bind(
@@ -115,7 +92,6 @@ class NightWatch(tk.Tk):
         )
         self.cmb_actions.grid(row=0, padx=6, pady=10, sticky="ew")
 
-        # setup time input section
         self.lbf_input_time.grid(row=1, columnspan=3, padx=10, pady=0, sticky="ew")
         self.lbl_hours.grid(column=0, row=0, padx=10, pady=5)
         self.lbl_minutes.grid(column=1, row=0, padx=10, pady=5)
@@ -133,16 +109,21 @@ class NightWatch(tk.Tk):
 
     def run_timer(self):
         """Start the timer based on user input."""
+        hours = self.hour_string.get()
+        minutes = self.minute_string.get()
+        seconds = self.second_string.get()
         try:
-            hours = int(self.hour_string.get())
-            minutes = int(self.minute_string.get())
-            seconds = int(self.second_string.get())
+            hours = int(hours)
+            minutes = int(minutes)
+            seconds = int(seconds)
         except ValueError:
-            self.show_error("Invalid values")
+            show_error(f"Invalid value: {hours!s}h {minutes}m {seconds}s")
+            self.reset_timer()
             return
 
         if hours <= 0 and minutes <= 0 and seconds <= 0:
-            self.show_error("A positive number is required")
+            show_error(f"A positive number is required: {hours}h {minutes}m {seconds}s")
+            self.reset_timer()
             return
 
         if self.timer:
@@ -151,11 +132,6 @@ class NightWatch(tk.Tk):
         self.timer = CountdownTimer(hours, minutes, seconds, self.update_ui)
         self.timer.start()
         self.btn_start_timer.config(text="Cancel", command=self.reset_timer)
-
-    def show_error(self, message):
-        """Display an error message in a message box."""
-        logging.error(str(message))
-        messagebox.showinfo("NightWatch", "Error: " + message, icon="error")
 
     def update_ui(self, hours, minutes, seconds, clock_time, action=False):
         """Update the UI with the remaining time or execute action."""
@@ -188,11 +164,11 @@ class NightWatch(tk.Tk):
         if action == "Pause":
             pause_media()
         elif action == "Sleep":
-            sleep_system(self)
+            sleep_system()
         elif action == "Shutdown":
-            shutdown_system(self)
+            shutdown_system()
         else:
-            self.show_error("No action selected")
+            show_error("No action selected")
         self.btn_start_timer.config(text="Start Timer", command=self.run_timer)
 
 

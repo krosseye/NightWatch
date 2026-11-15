@@ -20,11 +20,14 @@ class CountdownTimer:
             minutes (int): The number of minutes for the countdown.
             seconds (int): The number of seconds for the countdown.
             callback (function): The function to call at each tick of the timer.
+                                 The callback function should accept four arguments:
+                                 hours (int), minutes (int), seconds (int), total_seconds (int).
         """
         self.total_time = hours * 3600 + minutes * 60 + seconds
         self.callback = callback
         self._stop_event = threading.Event()
         self.thread = threading.Thread(target=self._run)
+        self.thread.daemon = True
 
     def start(self):
         """
