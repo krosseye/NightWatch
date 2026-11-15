@@ -19,6 +19,8 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+logger = logging.getLogger(__name__)
+
 
 class NightWatch(tk.Tk):
     """
@@ -156,7 +158,7 @@ class NightWatch(tk.Tk):
         self.second_string.set("00")
         self.prg_time_left.configure(value=0)
         self.update()
-        logging.info("Timer has been reset")
+        logger.info("Timer has been reset")
         self.btn_start_timer.config(text="Start Timer", command=self.run_timer)
 
     def execute_action(self):

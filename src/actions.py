@@ -9,10 +9,12 @@ import pyautogui
 
 from utils import check_root_privileges, get_os, show_error, show_info
 
+logger = logging.getLogger(__name__)
+
 
 def _run_command(command):
     """Executes an OS-specific command."""
-    logging.info("Executing command: %s", command)
+    logger.info("Executing command: %s", command)
     exit_code = os.system(command)
     if exit_code != 0:
         show_error(f"Failed to execute command: {command}\n\nExit code: {exit_code}")
@@ -27,7 +29,7 @@ def pause_media():
 def sleep_system():
     """Puts the system to sleep based on the operating system."""
     current_os = get_os()
-    logging.info("Going to sleep...")
+    logger.info("Going to sleep...")
     if current_os == "Windows":
         _run_command("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
     elif current_os == "Darwin":
@@ -43,7 +45,7 @@ def sleep_system():
 def shutdown_system():
     """Shuts down the system based on the operating system."""
     current_os = get_os()
-    logging.info("Shutting down...")
+    logger.info("Shutting down...")
     if current_os == "Windows":
         _run_command("shutdown /s /t 0")
     elif current_os in ["Darwin", "Linux"]:

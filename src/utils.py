@@ -4,22 +4,24 @@ import platform
 import sys
 from tkinter import messagebox
 
+logger = logging.getLogger(__name__)
+
 
 def show_error(message):
     """Display an error message in a message box."""
-    logging.error(str(message))
+    logger.error(str(message))
     messagebox.showinfo("NightWatch - Error", str(message), icon="error")
 
 
 def show_info(message):
     """Display info message in a message box."""
-    logging.info(str(message))
+    logger.info(str(message))
     messagebox.showinfo("NightWatch - Info", str(message), icon="info")
 
 
 def show_warning(message):
     """Display a warning message in a message box."""
-    logging.warning(str(message))
+    logger.warning(str(message))
     messagebox.showinfo("NightWatch - Warning", str(message), icon="warning")
 
 
@@ -43,10 +45,5 @@ def check_root_privileges():
 
 def resource_path(relative_path):
     """Get absolute path to resource (works for dev and bin)"""
-    try:
-        base_path = sys._MEIPASS  # PyInstaller temp folder
-        base_path = os.path.join(sys._MEIPASS, "resources")
-    except Exception:
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        base_path = os.path.join(current_dir, "resources")
-    return os.path.join(base_path, relative_path)
+    base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.realpath(__file__)))
+    return os.path.join(base_path, "resources", relative_path)
