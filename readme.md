@@ -25,13 +25,12 @@
 
 ## Building from source
 
-**NightWatch** offers two methods for compilation; native compilation and Docker-based compilation. Native compilation requires Python and PyInstaller, while Docker provides pre-configured environments for Windows and Linux.
+**NightWatch** offers two methods for compilation; native compilation and Docker-based compilation. Native compilation requires [uv](https://docs.astral.sh/uv/), while Docker provides pre-configured environments for Windows and Linux.
 
 ### Native Compilation
 
-```python
-pip install -r requirements.txt
-python build.py
+```bash
+uv run build.py
 ```
 
 ### Using Docker

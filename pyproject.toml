@@ -1,0 +1,18 @@
+[project]
+name = "nightwatch"
+version = "1.0.2"
+description = "NightWatch helps create a sleep-friendly environment by managing your devices during bedtime."
+readme = "readme.md"
+authors = [
+    { name = "KROSSEYE", email = "30990184+KROSSEYE@users.noreply.github.com" },
+]
+requires-python = ">=3.12"
+dependencies = ["pyautogui>=0.9.54", "sv-ttk>=2.6.1"]
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.22.3",
+    "ruff>=0.17,<1.0.0",
+    "mypy>=2.4,<3.0.0",
+    "prek>=0.5.0,<1.0.0",
+]

@@ -7,7 +7,6 @@ ENV WINEPREFIX=/wine
 
 ARG WINE_VERSION=winehq-devel
 ARG PYTHON_VERSION=3.12.4
-ARG PYINSTALLER_VERSION=6.9.0
 
 # Install dependencies and setup Wine
 RUN set -x \
@@ -68,11 +67,11 @@ RUN set -x \
     && cp "/wine/drive_c/windows/temp/_$0"/*.dll "/wine/drive_c/windows/system32"/
 
 VOLUME /app/
+COPY --from=ghcr.io/astral-sh/uv:0.8.15 /uv /usr/local/bin/uv
 COPY dockerfiles/entrypoint.sh /entrypoint.sh
 
 # Prepare the working directory and entrypoint script
-RUN /usr/bin/pip3 install pyinstaller==$PYINSTALLER_VERSION \
-    && ln -s /app /wine/drive_c/app \
+RUN ln -s /app /wine/drive_c/app \
     && mkdir -p /wine/drive_c/tmp \
     && chmod +x /entrypoint.sh
 

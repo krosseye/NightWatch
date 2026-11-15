@@ -1,10 +1,10 @@
 FROM python:3.12.4
 
-ARG PYINSTALLER_VERSION=6.9.0
 ENV DEBIAN_FRONTEND=noninteractive
 
 VOLUME /app/
 
+COPY --from=ghcr.io/astral-sh/uv:0.8.15 /uv /usr/local/bin/uv
 COPY dockerfiles/entrypoint.sh /entrypoint.sh
 
 RUN apt update \
@@ -16,9 +16,6 @@ RUN apt update \
     && rm -rf \
     /var/lib/apt/lists/* \
     /var/cache/* \
-    && pip3 install \
-    pyinstaller==$PYINSTALLER_VERSION \
-    && pip3 cache purge \
     && chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

@@ -1,3 +1,0 @@
-PyAutoGUI
-sv_ttk
-pyinstaller
