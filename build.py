@@ -5,44 +5,42 @@ import platform
 
 import PyInstaller.__main__
 
-PROJECT_DIR = os.getcwd()
-PLATORM = platform.system().lower()
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+SOURCE_DIR = os.path.join(PROJECT_DIR, "src")
+RESOURCE_DIR = os.path.join(SOURCE_DIR, "resources")
+
+PLATFORM = platform.system().lower()
 ARCHITECTURE = platform.machine().lower()
-SRC_DIR = os.path.join(PROJECT_DIR, "src")
-RESOURCE_DIR = os.path.join(SRC_DIR, "resources")
-THEME_DIR = os.path.join(RESOURCE_DIR, "sv_ttk")
-if PLATORM == "windows":
-    ICON_FILE = os.path.join(RESOURCE_DIR, "icon.ico")
-else:
-    ICON_FILE = os.path.join(RESOURCE_DIR, "icon.png")
-BIN_DIR = os.path.join(PROJECT_DIR, "bin")
-DIST_DIR = os.path.join(BIN_DIR, f"{PLATORM}-{ARCHITECTURE}")
-BUILD_DIR = os.path.join(BIN_DIR, f"{PLATORM}-{ARCHITECTURE}", "build")
-SPEC_DIR = DIST_DIR
-EXECUTABLE_NAME = f"NightWatch-{PLATORM}-{ARCHITECTURE}"
+ARCHITECTURE = {"amd64": "x86_64", "aarch64": "arm64"}.get(ARCHITECTURE, ARCHITECTURE)
+TARGET = f"{PLATFORM}-{ARCHITECTURE}"
+
+BUILD_DIR = os.path.join(PROJECT_DIR, "build")
+DIST_DIR = os.path.join(BUILD_DIR, "bin", TARGET)
+ARTIFACTS_DIR = os.path.join(BUILD_DIR, "artifacts", TARGET)
+ICON_FILE = os.path.join(
+    RESOURCE_DIR, "icon.ico" if PLATFORM == "windows" else "icon.png"
+)
 
 
-def main():
+def main() -> None:
     """Main function to build the NightWatch application."""
-    script_path = os.path.join(SRC_DIR, "main.py")
-
     PyInstaller.__main__.run(
         [
-            script_path,
+            os.path.join(SOURCE_DIR, "main.py"),
             "--name",
-            EXECUTABLE_NAME,
+            f"NightWatch-{TARGET}",
             "--icon",
             ICON_FILE,
             "--distpath",
             DIST_DIR,
             "--workpath",
-            BUILD_DIR,
+            os.path.join(ARTIFACTS_DIR, "work"),
             "--specpath",
-            SPEC_DIR,
+            ARTIFACTS_DIR,
             "--add-data",
-            f"{RESOURCE_DIR}:resources",
-            "--add-data",
-            f"{THEME_DIR}:sv_ttk",
+            f"{RESOURCE_DIR}{os.pathsep}resources",
+            "--collect-data",
+            "sv_ttk",
             "--onefile",
             "--clean",
             "--noconfirm",

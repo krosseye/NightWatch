@@ -9,8 +9,9 @@ import sys
 import tkinter as tk
 from tkinter import ttk
 
+import sv_ttk
+
 from actions import pause_media, shutdown_system, sleep_system
-from resources import sv_ttk
 from timer import CountdownTimer
 from utils import check_root_privileges, resource_path, show_error
 
