@@ -1,21 +1,18 @@
-FROM python:3.12.4
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-VOLUME /app/
+FROM almalinux:8.10
 
 COPY --from=ghcr.io/astral-sh/uv:0.8.15 /uv /usr/local/bin/uv
-COPY dockerfiles/entrypoint.sh /entrypoint.sh
 
-RUN apt update \
-    && apt install -y \
-    binutils \
-    gcc \
-    zlib1g-dev \
-    && apt clean \
-    && rm -rf \
-    /var/lib/apt/lists/* \
-    /var/cache/* \
-    && chmod +x /entrypoint.sh
+ENV UV_PYTHON_INSTALL_DIR=/opt/uv/python \
+    UV_PROJECT_ENVIRONMENT=/opt/uv/venv \
+    UV_LINK_MODE=copy \
+    LD_LIBRARY_PATH=/opt/uv/python/current/lib
 
-ENTRYPOINT ["/entrypoint.sh"]
+RUN dnf install -y binutils \
+    && dnf clean all \
+    && uv python install 3.12 \
+    && ln -s /opt/uv/python/cpython-3.12.*-linux-x86_64-gnu /opt/uv/python/current
+
+VOLUME /app/
+WORKDIR /app
+
+CMD ["uv", "run", "--frozen", "--no-default-groups", "--group", "build", "python", "build.py"]
