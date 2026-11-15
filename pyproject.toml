@@ -1,15 +1,13 @@
 [project]
 name = "nightwatch"
-version = "1.1.0"
+version = "1.1.1"
 description = "NightWatch helps create a sleep-friendly environment by managing your devices during bedtime."
 readme = "readme.md"
 authors = [
     { name = "KROSSEYE", email = "30990184+KROSSEYE@users.noreply.github.com" },
 ]
 requires-python = ">=3.12"
-dependencies = [
- "sv-ttk>=2.6.1",
-]
+dependencies = ["sv-ttk>=2.6.1"]
 
 [project.scripts]
 nightwatch = "nightwatch.main:main"
@@ -19,13 +17,16 @@ requires = ["uv_build>=0.8.15,<0.9"]
 build-backend = "uv_build"
 
 [dependency-groups]
+build = ["pyinstaller>=6.22.3"]
 dev = [
-    "pyinstaller>=6.22.3",
     "ruff>=0.17,<1.0.0",
     "mypy>=2.4,<3.0.0",
     "prek>=0.5.0,<1.0.0",
     "types-pyinstaller>=6.22.1.20260827",
 ]
+
+[tool.uv]
+default-groups = ["dev", "build"]
 
 [tool.mypy]
 files = ["src", "build.py"]

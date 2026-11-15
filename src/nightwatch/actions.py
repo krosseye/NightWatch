@@ -6,8 +6,9 @@ import ctypes
 import logging
 import os
 import shutil
+import sys
 
-from nightwatch.utils import get_os, show_error, show_info
+from nightwatch.utils import show_error, show_info
 
 logger = logging.getLogger(__name__)
 
@@ -26,11 +27,10 @@ def _run_command(command):
 
 def pause_media():
     """Pauses media playback, without resuming media that is already paused."""
-    current_os = get_os()
-    if current_os == "Windows":
+    if sys.platform == "win32":
         ctypes.windll.user32.keybd_event(VK_MEDIA_STOP, 0, 0, 0)
         ctypes.windll.user32.keybd_event(VK_MEDIA_STOP, 0, KEYEVENTF_KEYUP, 0)
-    elif current_os == "Linux":
+    elif sys.platform == "linux":
         if not shutil.which("playerctl"):
             show_error("Pausing media on Linux requires playerctl to be installed.")
             return
@@ -44,14 +44,13 @@ def pause_media():
 
 def sleep_system():
     """Puts the system to sleep based on the operating system."""
-    current_os = get_os()
     logger.info("Going to sleep...")
-    if current_os == "Windows":
+    if sys.platform == "win32":
         if not ctypes.windll.powrprof.SetSuspendState(False, False, False):
             show_error("Failed to put the system to sleep.")
-    elif current_os == "Darwin":
+    elif sys.platform == "darwin":
         _run_command("pmset sleepnow")
-    elif current_os == "Linux":
+    elif sys.platform == "linux":
         _run_command("systemctl suspend")
     else:
         show_error("Unable to suspend, unknown operating system.")
@@ -59,13 +58,12 @@ def sleep_system():
 
 def shutdown_system():
     """Shuts down the system based on the operating system."""
-    current_os = get_os()
     logger.info("Shutting down...")
-    if current_os == "Windows":
+    if sys.platform == "win32":
         _run_command("shutdown /s /t 0")
-    elif current_os == "Darwin":
+    elif sys.platform == "darwin":
         _run_command("osascript -e 'tell app \"System Events\" to shut down'")
-    elif current_os == "Linux":
+    elif sys.platform == "linux":
         _run_command("systemctl poweroff")
     else:
         show_error("Unable to shutdown, unknown operating system.")

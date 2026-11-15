@@ -1,6 +1,5 @@
 import logging
 import os
-import platform
 from tkinter import messagebox
 
 logger = logging.getLogger(__name__)
@@ -16,12 +15,6 @@ def show_info(message):
     """Display info message in a message box."""
     logger.info(str(message))
     messagebox.showinfo("NightWatch - Info", str(message), icon="info")
-
-
-def get_os():
-    """Determines the name of the operating system."""
-    os_name = platform.system()
-    return os_name
 
 
 def resource_path(relative_path):

@@ -171,8 +171,6 @@ class NightWatch(tk.Tk):
             sleep_system()
         elif action == "Shutdown":
             shutdown_system()
-        else:
-            show_error("No action selected")
         self.btn_start_timer.config(text="Start Timer", command=self.run_timer)
 
 
