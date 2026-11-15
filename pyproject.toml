@@ -7,7 +7,9 @@ authors = [
     { name = "KROSSEYE", email = "30990184+KROSSEYE@users.noreply.github.com" },
 ]
 requires-python = ">=3.12"
-dependencies = ["pyautogui>=0.9.54", "sv-ttk>=2.6.1"]
+dependencies = [
+ "sv-ttk>=2.6.1",
+]
 
 [project.scripts]
 nightwatch = "nightwatch.main:main"
@@ -22,7 +24,6 @@ dev = [
     "ruff>=0.17,<1.0.0",
     "mypy>=2.4,<3.0.0",
     "prek>=0.5.0,<1.0.0",
-    "types-pyautogui>=0.9.3.20260508",
     "types-pyinstaller>=6.22.1.20260827",
 ]
 

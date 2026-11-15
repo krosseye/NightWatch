@@ -5,14 +5,15 @@ This script sets up the UI and handles the countdown timer.
 """
 
 import logging
+import math
 import sys
+import time
 import tkinter as tk
 from tkinter import ttk
 
 import sv_ttk
 
 from nightwatch.actions import pause_media, shutdown_system, sleep_system
-from nightwatch.timer import CountdownTimer
 from nightwatch.utils import resource_path, show_error
 
 logger = logging.getLogger(__name__)
@@ -56,7 +57,8 @@ class NightWatch(tk.Tk):
         )
 
         self.setup_ui()
-        self.timer = None
+        self.deadline = 0.0
+        self.tick_id: str | None = None
 
     def setup_window(self):
         """Set up the main application window."""
@@ -118,45 +120,45 @@ class NightWatch(tk.Tk):
             self.reset_timer()
             return
 
-        if (
-            min(hours, minutes, seconds) < 0
-            or hours * 3600 + minutes * 60 + seconds <= 0
-        ):
+        total = hours * 3600 + minutes * 60 + seconds
+        if min(hours, minutes, seconds) < 0 or total <= 0:
             show_error(
                 f"A positive duration is required: {hours}h {minutes}m {seconds}s"
             )
             self.reset_timer()
             return
 
-        if self.timer:
-            self.timer.stop()
-
-        self.timer = CountdownTimer(hours, minutes, seconds, self.update_ui)
-        self.timer.start()
+        self.deadline = time.monotonic() + total
+        self.prg_time_left.configure(maximum=total)
         self.btn_start_timer.config(text="Cancel", command=self.reset_timer)
+        self.tick()
 
-    def update_ui(self, hours, minutes, seconds, clock_time, action=False):
-        """Update the UI with the remaining time or execute action."""
+    def tick(self):
+        """Show the time left, and run the action once it reaches zero."""
+        remaining = max(0, math.ceil(self.deadline - time.monotonic()))
+        hours, rest = divmod(remaining, 3600)
+        minutes, seconds = divmod(rest, 60)
         self.hour_string.set(f"{hours:02d}")
         self.minute_string.set(f"{minutes:02d}")
         self.second_string.set(f"{seconds:02d}")
-        self.prg_time_left.configure(value=clock_time, maximum=self.timer.total_time)
-        self.update()
+        self.prg_time_left.configure(value=remaining)
 
-        if action:
+        if remaining:
+            self.tick_id = self.after(200, self.tick)
+        else:
+            self.tick_id = None
             self.execute_action()
 
     def reset_timer(self):
         """Reset the timer to its initial state."""
-        if self.timer:
-            self.timer.stop()
-            self.timer = None
+        if self.tick_id:
+            self.after_cancel(self.tick_id)
+            self.tick_id = None
 
         self.hour_string.set("00")
         self.minute_string.set("00")
         self.second_string.set("00")
         self.prg_time_left.configure(value=0)
-        self.update()
         logger.info("Timer has been reset")
         self.btn_start_timer.config(text="Start Timer", command=self.run_timer)
 

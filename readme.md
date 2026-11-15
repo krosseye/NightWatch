@@ -6,7 +6,7 @@
 
 **Set a sleep timer:** Choose a duration and tell **NightWatch** what to do when the time is up:
 
-- **Pause Media:** Automatically pause your current media playback (e.g. YouTube, Netflix, etc.).
+- **Pause Media:** Automatically pause your current media playback (e.g. YouTube, Netflix, etc.). On Linux this requires [playerctl](https://github.com/altdesktop/playerctl); not yet supported on macOS.
 - **Sleep Computer:** Put your computer into sleep mode.
 - **Shutdown Computer:** Completely shut down your computer.
 

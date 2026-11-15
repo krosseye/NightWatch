@@ -48,7 +48,6 @@ def main() -> None:
             "--clean",
             "--noconfirm",
             "--windowed",
-            "--uac-admin",
         ]
     )
 
