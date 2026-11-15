@@ -9,6 +9,13 @@ authors = [
 requires-python = ">=3.12"
 dependencies = ["pyautogui>=0.9.54", "sv-ttk>=2.6.1"]
 
+[project.scripts]
+nightwatch = "nightwatch.main:main"
+
+[build-system]
+requires = ["uv_build>=0.8.15,<0.9"]
+build-backend = "uv_build"
+
 [dependency-groups]
 dev = [
     "pyinstaller>=6.22.3",

@@ -27,6 +27,12 @@
 
 **NightWatch** offers two methods for compilation; native compilation and Docker-based compilation. Native compilation requires [uv](https://docs.astral.sh/uv/), while Docker provides pre-configured environments for Windows and Linux.
 
+### Running from source
+
+```bash
+uv run nightwatch
+```
+
 ### Native Compilation
 
 ```bash

@@ -269,7 +269,7 @@ wheels = [
 [[package]]
 name = "nightwatch"
 version = "1.0.2"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "pyautogui" },
     { name = "sv-ttk" },

@@ -1,7 +1,6 @@
 import logging
 import os
 import platform
-import sys
 from tkinter import messagebox
 
 logger = logging.getLogger(__name__)
@@ -45,5 +44,6 @@ def check_root_privileges():
 
 def resource_path(relative_path):
     """Get absolute path to resource (works for dev and bin)"""
-    base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.realpath(__file__)))
-    return os.path.join(base_path, "resources", relative_path)
+    return os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), "resources", relative_path
+    )

@@ -7,7 +7,8 @@ import PyInstaller.__main__
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 SOURCE_DIR = os.path.join(PROJECT_DIR, "src")
-RESOURCE_DIR = os.path.join(SOURCE_DIR, "resources")
+PACKAGE_DIR = os.path.join(SOURCE_DIR, "nightwatch")
+RESOURCE_DIR = os.path.join(PACKAGE_DIR, "resources")
 
 PLATFORM = platform.system().lower()
 ARCHITECTURE = platform.machine().lower()
@@ -26,7 +27,7 @@ def main() -> None:
     """Main function to build the NightWatch application."""
     PyInstaller.__main__.run(
         [
-            os.path.join(SOURCE_DIR, "main.py"),
+            os.path.join(PACKAGE_DIR, "__main__.py"),
             "--name",
             f"NightWatch-{TARGET}",
             "--icon",
@@ -37,8 +38,10 @@ def main() -> None:
             os.path.join(ARTIFACTS_DIR, "work"),
             "--specpath",
             ARTIFACTS_DIR,
+            "--paths",
+            SOURCE_DIR,
             "--add-data",
-            f"{RESOURCE_DIR}{os.pathsep}resources",
+            f"{RESOURCE_DIR}{os.pathsep}nightwatch/resources",
             "--collect-data",
             "sv_ttk",
             "--onefile",

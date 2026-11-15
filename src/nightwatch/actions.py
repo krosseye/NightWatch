@@ -7,7 +7,7 @@ import os
 
 import pyautogui
 
-from utils import check_root_privileges, get_os, show_error, show_info
+from nightwatch.utils import check_root_privileges, get_os, show_error, show_info
 
 logger = logging.getLogger(__name__)
 

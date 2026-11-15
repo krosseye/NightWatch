@@ -11,13 +11,9 @@ from tkinter import ttk
 
 import sv_ttk
 
-from actions import pause_media, shutdown_system, sleep_system
-from timer import CountdownTimer
-from utils import check_root_privileges, resource_path, show_error
-
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+from nightwatch.actions import pause_media, shutdown_system, sleep_system
+from nightwatch.timer import CountdownTimer
+from nightwatch.utils import check_root_privileges, resource_path, show_error
 
 logger = logging.getLogger(__name__)
 
@@ -175,5 +171,9 @@ class NightWatch(tk.Tk):
         self.btn_start_timer.config(text="Start Timer", command=self.run_timer)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Launch NightWatch."""
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    )
     NightWatch().mainloop()
