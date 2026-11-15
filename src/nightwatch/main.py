@@ -13,7 +13,7 @@ import sv_ttk
 
 from nightwatch.actions import pause_media, shutdown_system, sleep_system
 from nightwatch.timer import CountdownTimer
-from nightwatch.utils import check_root_privileges, resource_path, show_error
+from nightwatch.utils import resource_path, show_error
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +57,6 @@ class NightWatch(tk.Tk):
 
         self.setup_ui()
         self.timer = None
-
-        check_root_privileges()
 
     def setup_window(self):
         """Set up the main application window."""
@@ -120,8 +118,13 @@ class NightWatch(tk.Tk):
             self.reset_timer()
             return
 
-        if hours <= 0 and minutes <= 0 and seconds <= 0:
-            show_error(f"A positive number is required: {hours}h {minutes}m {seconds}s")
+        if (
+            min(hours, minutes, seconds) < 0
+            or hours * 3600 + minutes * 60 + seconds <= 0
+        ):
+            show_error(
+                f"A positive duration is required: {hours}h {minutes}m {seconds}s"
+            )
             self.reset_timer()
             return
 

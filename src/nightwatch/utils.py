@@ -18,28 +18,10 @@ def show_info(message):
     messagebox.showinfo("NightWatch - Info", str(message), icon="info")
 
 
-def show_warning(message):
-    """Display a warning message in a message box."""
-    logger.warning(str(message))
-    messagebox.showinfo("NightWatch - Warning", str(message), icon="warning")
-
-
 def get_os():
     """Determines the name of the operating system."""
     os_name = platform.system()
     return os_name
-
-
-def check_root_privileges():
-    """Checks if the script has root privileges."""
-    try:
-        if os.geteuid() != 0:
-            show_warning(
-                "This program needs root privileges to sleep or shutdown.\n\nYou can still pause media."
-            )
-            return
-    except AttributeError:
-        pass  # On Windows, os.geteuid() is not defined
 
 
 def resource_path(relative_path):

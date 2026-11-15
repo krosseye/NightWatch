@@ -2,12 +2,13 @@
 This script handles the actions to perform at end of the countdown timer.
 """
 
+import ctypes
 import logging
 import os
 
 import pyautogui
 
-from nightwatch.utils import check_root_privileges, get_os, show_error, show_info
+from nightwatch.utils import get_os, show_error, show_info
 
 logger = logging.getLogger(__name__)
 
@@ -31,12 +32,11 @@ def sleep_system():
     current_os = get_os()
     logger.info("Going to sleep...")
     if current_os == "Windows":
-        _run_command("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
+        if not ctypes.windll.powrprof.SetSuspendState(False, False, False):
+            show_error("Failed to put the system to sleep.")
     elif current_os == "Darwin":
-        check_root_privileges()
         _run_command("pmset sleepnow")
     elif current_os == "Linux":
-        check_root_privileges()
         _run_command("systemctl suspend")
     else:
         show_error("Unable to suspend, unknown operating system.")
@@ -48,8 +48,9 @@ def shutdown_system():
     logger.info("Shutting down...")
     if current_os == "Windows":
         _run_command("shutdown /s /t 0")
-    elif current_os in ["Darwin", "Linux"]:
-        check_root_privileges()
-        _run_command("sudo shutdown -h now")
+    elif current_os == "Darwin":
+        _run_command("osascript -e 'tell app \"System Events\" to shut down'")
+    elif current_os == "Linux":
+        _run_command("systemctl poweroff")
     else:
         show_error("Unable to shutdown, unknown operating system.")
