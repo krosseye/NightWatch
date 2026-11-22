@@ -9,6 +9,7 @@ import math
 import sys
 import time
 import tkinter as tk
+from collections.abc import Callable
 from tkinter import ttk
 
 import sv_ttk
@@ -18,6 +19,12 @@ from nightwatch.utils import resource_path, show_error
 
 logger = logging.getLogger(__name__)
 
+ACTIONS: dict[str, Callable[[], None]] = {
+    "Pause": pause_media,
+    "Sleep": sleep_system,
+    "Shutdown": shutdown_system,
+}
+
 
 class NightWatch(tk.Tk):
     """
@@ -26,14 +33,13 @@ class NightWatch(tk.Tk):
     This class initializes and sets up the main application window and its components.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.setup_window()
 
         self.lbf_action = ttk.LabelFrame(self, text="Select Action", padding=5)
-        action_options = ["Pause", "Sleep", "Shutdown"]
         self.cmb_actions = ttk.Combobox(
-            self.lbf_action, values=action_options, state="readonly"
+            self.lbf_action, values=list(ACTIONS), state="readonly"
         )
         self.hour_string = tk.StringVar(value="00")
         self.minute_string = tk.StringVar(value="00")
@@ -60,7 +66,7 @@ class NightWatch(tk.Tk):
         self.deadline = 0.0
         self.tick_id: str | None = None
 
-    def setup_window(self):
+    def setup_window(self) -> None:
         """Set up the main application window."""
         self.title("NightWatch")
         self.resizable(height=False, width=False)
@@ -82,7 +88,7 @@ class NightWatch(tk.Tk):
         else:
             sv_ttk.set_theme("dark")
 
-    def setup_ui(self):
+    def setup_ui(self) -> None:
         """Set up the user interface elements."""
         self.lbf_action.grid(row=0, columnspan=3, padx=10, pady=5, sticky="ew")
         self.cmb_actions.current(0)
@@ -99,24 +105,26 @@ class NightWatch(tk.Tk):
 
         self.btn_start_timer.grid(row=6, columnspan=3, padx=10, pady=10, sticky="ew")
 
-    def create_time_entry(self, parent, string_var, column):
+    def create_time_entry(
+        self, parent: tk.Misc, string_var: tk.StringVar, column: int
+    ) -> ttk.Entry:
         """Create a time entry widget."""
         entry = ttk.Entry(parent, width=3, textvariable=string_var, justify="center")
         entry.bind("<FocusIn>", lambda event: event.widget.select_range(0, "end"))
         entry.grid(column=column, row=1, padx=15, pady=5)
         return entry
 
-    def run_timer(self):
+    def run_timer(self) -> None:
         """Start the timer based on user input."""
-        hours = self.hour_string.get()
-        minutes = self.minute_string.get()
-        seconds = self.second_string.get()
+        hours_text = self.hour_string.get()
+        minutes_text = self.minute_string.get()
+        seconds_text = self.second_string.get()
         try:
-            hours = int(hours)
-            minutes = int(minutes)
-            seconds = int(seconds)
+            hours = int(hours_text)
+            minutes = int(minutes_text)
+            seconds = int(seconds_text)
         except ValueError:
-            show_error(f"Invalid value: {hours!s}h {minutes}m {seconds}s")
+            show_error(f"Invalid value: {hours_text}h {minutes_text}m {seconds_text}s")
             self.reset_timer()
             return
 
@@ -133,7 +141,7 @@ class NightWatch(tk.Tk):
         self.btn_start_timer.config(text="Cancel", command=self.reset_timer)
         self.tick()
 
-    def tick(self):
+    def tick(self) -> None:
         """Show the time left, and run the action once it reaches zero."""
         remaining = max(0, math.ceil(self.deadline - time.monotonic()))
         hours, rest = divmod(remaining, 3600)
@@ -149,7 +157,7 @@ class NightWatch(tk.Tk):
             self.tick_id = None
             self.execute_action()
 
-    def reset_timer(self):
+    def reset_timer(self) -> None:
         """Reset the timer to its initial state."""
         if self.tick_id:
             self.after_cancel(self.tick_id)
@@ -162,15 +170,9 @@ class NightWatch(tk.Tk):
         logger.info("Timer has been reset")
         self.btn_start_timer.config(text="Start Timer", command=self.run_timer)
 
-    def execute_action(self):
+    def execute_action(self) -> None:
         """Execute the selected action after the countdown ends."""
-        action = self.cmb_actions.get()
-        if action == "Pause":
-            pause_media()
-        elif action == "Sleep":
-            sleep_system()
-        elif action == "Shutdown":
-            shutdown_system()
+        ACTIONS[self.cmb_actions.get()]()
         self.btn_start_timer.config(text="Start Timer", command=self.run_timer)
 
 

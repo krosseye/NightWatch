@@ -17,7 +17,7 @@ VK_MEDIA_STOP = 0xB2
 KEYEVENTF_KEYUP = 0x2
 
 
-def _run_command(command):
+def _run_command(command: str) -> None:
     """Executes an OS-specific command. Raises RuntimeError if it fails."""
     logger.info("Executing command: %s", command)
     exit_code = os.system(command)
@@ -27,7 +27,7 @@ def _run_command(command):
         )
 
 
-def _stop_playback():
+def _stop_playback() -> None:
     """Stops media playback. Raises RuntimeError if it can't."""
     if sys.platform == "win32":
         ctypes.windll.user32.keybd_event(VK_MEDIA_STOP, 0, 0, 0)
@@ -44,7 +44,7 @@ def _stop_playback():
         )
 
 
-def pause_media():
+def pause_media() -> None:
     """Pauses media playback, without resuming media that is already paused."""
     try:
         _stop_playback()
@@ -54,7 +54,7 @@ def pause_media():
         show_info("Media has been paused.")
 
 
-def sleep_system():
+def sleep_system() -> None:
     """Puts the system to sleep based on the operating system."""
     logger.info("Going to sleep...")
     try:
@@ -77,7 +77,7 @@ def sleep_system():
         show_error(str(error))
 
 
-def shutdown_system():
+def shutdown_system() -> None:
     """Shuts down the system based on the operating system."""
     logger.info("Shutting down...")
     try:

@@ -30,3 +30,4 @@ default-groups = ["dev", "build"]
 
 [tool.mypy]
 files = ["src", "build.py"]
+strict = true
